@@ -8,7 +8,14 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="index.css">
-<?php include_once "config.php"; ?>
+<?php include_once "config.php"; 
+session_start();
+if (isset($_GET['eventid'])) {
+    $eventid = $_SESSION["eventid"] = $_GET['eventid'];
+} else {
+    $eventid = $_SESSION["eventid"];
+}
+?>
 <style>
 html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 </style>
@@ -30,9 +37,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   </div>
   <div class="w3-bar-block">
     <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
-    <a href="#ABOUT" class="w3-bar-item w3-button w3-padding w3-blue"><i class="fa fa-anchor fa-fw"></i> About Crosby Beach</a>
-    <a href="#EVENTS" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bell fa-fw"></i> News / Events</a>
-    <a href="#LOCATION" class="w3-bar-item w3-button w3-padding"><i class="fa fa-map fa-fw"></i> Location</a>
+    <a href="index.php" class="w3-bar-item w3-button w3-padding w3-blue"><i class="fa fa-back fa-fw"></i> Return</a>
   </div>
 </nav>
 
@@ -50,56 +55,26 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
   </header>
 
-  <div id="ABOUT" class="w3-panel w3-animate-bottom">
-    <h3>About</h3>
-    <div id="crosbyInfo-el" class = "w3-half w3-green w3-card-4 w3-padding" onclick="displayCrosbyInfo();">
-    <h5>Click for information on Crosby Beach</h5>
-    </div>
-    <div id="ironMenInfo-el" class = "w3-half w3-blue w3-card-4 w3-padding" onclick ="displayIronMenInfo()">
-    <h5>Click for information about the Iron Men</h5>
-    </div>
-  </div>
-
   <!--Events tab -->
-  <div id="EVENTS" class="w3-panel w3-dark-grey w3-animate-right">
-    <h3>Events</h3>
-     <?php
-     $sql = "SELECT * FROM crosbyEvent";
+  <div class="w3-panel w3-yellow w3-animate-right">
+  <?php
+     $sql = "SELECT * FROM crosbyEvent WHERE eventID = $eventid";
      $result = mysqli_query($conn, $sql);
    if($result->num_rows > 0){
-    while($row = $result->fetch_assoc()){
-    $smallDesc = substr($row["eventDesc"], 0, 50);
-    $colors = ["w3-green", "w3-blue", "w3-orange"];
-    $random = rand(0,2);
-    
-      echo "<div class = 'w3-border w3-quarter $colors[$random] w3-padding w3-animate-zoom w3-margin-top w3-margin-bottom'>" . "<h4>" . "<b>" . $row["eventName"] . "</b>" . "</h4>" . "</p>" . "<p>" . $smallDesc . "..." . "</p>" . "<p>" . $row["eventDate"] . " at " . $row["eventTime"] . "<p>". "<a class='w3-button w3-black' href =\"displayEvent.php?eventid=" . $row["eventID"] . "\">" . "Find out more" . "</a>" . "</div>";
-     }
+    while($row = $result->fetch_assoc()){    
+      echo $row['eventImg'];
+    echo "<div class='w3-third w3-margin'>" . "<img src='uploads/'". $row['eventImg'] .  "style='width:100%'>" . "</div>"; 
+    echo "<div class = 'w3-half'>" . "<h2>" . $row['eventName'] . "</h2>" . "<p>" ."<h4>" . "Description:". "</h4>" . "</p>" . "<p>" . $row['eventDesc'] . "</p>" . "<p>" . "<h4>" . "Date:" . "</h4>" . $row['eventDate'] . " at " . $row['eventTime'] . "</p>" . "<a class='w3-button w3-black w3-margin-bottom' href=''>" . "Contact the Event Organiser" . "</a>" . "</div>";
+}
    }
    else{
-      echo "0 results";
+      echo "<h2>" . "You have attempted to reach this page before selecting an event!" . "</h2>";
   }
  
   $conn->close();
 
     ?>
-  </div>
 
-  <!-- Location Tab -->
-  <div id="LOCATION" class="w3-panel w3-animate-zoom w3-yellow w3-padding-32">
-    <h3>Location</h3>
-    <div class="w3-third w3-margin-right">
-        <img src="Pictures/GoogleMapsLocation.jpg" style="width:100%">
-        </div>
-        <div class = "w3-half"> 
-            <h5><b> Address : Cambridge Road or Mariners Road or Hall Road West, Crosby, Merseyside </b></h5>
-            <h6><b>Travelling by car</b></h6>
-            <p>On site parking - Free parking at Cambridge Road, Mariners Road and Hall Road car parks.</p>
-            <h6><b>Travelling by train</b></h6>
-            <p>Different parts of Crosby Beach can be reached by train via the Northern Line (Merseytravel) stopping at:</p>
-              <ul><li>Waterloo Station: 3/4 mile walk</li>
-              <li>Blundellsands & Crosby: 3/4 mile walk</li>
-              <li>Hall Road: 2 Minute Walk</li></ul>
-        </div>
   </div>
 
   <!-- Footer -->
@@ -110,7 +85,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
   <!-- End page content -->
 </div>
-<script src="index.js"></script>
+
 <script>
 // Get the Sidebar
 var mySidebar = document.getElementById("mySidebar");
