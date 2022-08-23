@@ -74,7 +74,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   $conn->close();
 
     ?>
-
+<img src="uploads/ $row['eventImg']" style='width:100%'>
   </div>
 
   <!-- Footer -->
